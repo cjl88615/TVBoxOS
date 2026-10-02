@@ -37,6 +37,7 @@ jobs:
       - name: Prepare portable build
         shell: bash
         run: |
+          : > local.properties
           sed -i '/buildPython.*python.exe/d' pyramid/build.gradle
           if grep -q 'crosswalk' build.gradle; then
             sed -i "/crosswalk/a\        maven { url 'https://j4uq.github.io/crosswalk/releases/crosswalk/android/maven2' }" build.gradle
