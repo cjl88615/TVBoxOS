@@ -30,6 +30,7 @@ import me.jessyan.autosize.unit.Subunits;
  * @description:
  */
 public class App extends MultiDexApplication {
+    private static final String DEFAULT_API_URL = "https://tvsource.taliabu.kdns.fr";
     private static App instance;
 
     private static P2PClass p;
@@ -64,6 +65,12 @@ public class App extends MultiDexApplication {
     private void initParams() {
         // Hawk
         Hawk.init(this).build();
+        if (!Hawk.contains(HawkConfig.API_URL)) {
+            Hawk.put(HawkConfig.API_URL, DEFAULT_API_URL);
+        }
+        if (!Hawk.contains(HawkConfig.LIVE_API_URL)) {
+            Hawk.put(HawkConfig.LIVE_API_URL, Hawk.get(HawkConfig.API_URL, DEFAULT_API_URL));
+        }
         Hawk.put(HawkConfig.DEBUG_OPEN, false);
         Hawk.put(HawkConfig.PLAYER_IS_LIVE, false);
         if (!Hawk.contains(HawkConfig.PLAY_TYPE)) {
