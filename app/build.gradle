@@ -138,6 +138,26 @@ android {
 //    }
 }
 
+def prepareTaliabuLegacyBranding = tasks.register("prepareTaliabuLegacyBranding") {
+    doLast {
+        if (System.getenv("GITHUB_ACTIONS") != "true") return
+        ["taliabu_icon", "taliabu_banner"].each { name ->
+            def src = file("src/main/res/drawable-nodpi/${name}.webp")
+            def dst = file("src/main/res/drawable-nodpi/${name}.png")
+            if (!src.exists()) return
+            exec {
+                commandLine "ffmpeg", "-loglevel", "error", "-y", "-i", src.absolutePath, dst.absolutePath
+            }
+            if (!dst.exists() || dst.length() == 0) throw new GradleException("Failed to convert ${name} to PNG")
+            if (!src.delete()) throw new GradleException("Failed to remove legacy WebP ${src}")
+        }
+    }
+}
+
+tasks.named("preBuild").configure {
+    dependsOn prepareTaliabuLegacyBranding
+}
+
 repositories {
 
 }
