@@ -138,30 +138,6 @@ android {
 //    }
 }
 
-def prepareTaliabuLegacyBranding = tasks.register("prepareTaliabuLegacyBranding") {
-    doLast {
-        if (System.getenv("GITHUB_ACTIONS") != "true") return
-        exec {
-            commandLine "python", "-m", "pip", "install", "--quiet", "pillow"
-        }
-        ["taliabu_icon", "taliabu_banner"].each { name ->
-            def src = file("src/main/res/drawable-nodpi/${name}.webp")
-            def dst = file("src/main/res/drawable-nodpi/${name}.png")
-            if (!src.exists()) return
-            exec {
-                environment "TALIABU_SRC", src.absolutePath
-                environment "TALIABU_DST", dst.absolutePath
-                commandLine "python", "-c", "import os; from PIL import Image; p=os.environ['TALIABU_SRC']; q=os.environ['TALIABU_DST']; im=Image.open(p); im.load(); im.save(q, 'PNG', optimize=False)"
-            }
-            if (!dst.exists() || dst.length() == 0) throw new GradleException("Failed to convert ${name} to PNG")
-            if (!src.delete()) throw new GradleException("Failed to remove legacy WebP ${src}")
-        }
-    }
-}
-
-tasks.named("preBuild").configure {
-    dependsOn prepareTaliabuLegacyBranding
-}
 
 repositories {
 
